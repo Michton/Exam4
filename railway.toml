@@ -1,6 +1,0 @@
-[build] 
-builder = "NIXPACKS"
-buildCommand = "dotnet publish Exam4/Exam4.csproj -c Release -o out"
-
-[deploy]
-startCommand = "dotnet out/Exam4.dll"
