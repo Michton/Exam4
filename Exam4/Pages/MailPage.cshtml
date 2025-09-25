@@ -1,0 +1,119 @@
+﻿@page
+@model Exam4.Pages.MailPageModel
+@{
+    ViewData["Title"] = "Email Validation";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@ViewData["Title"] - ASP.NET Core</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .caption {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .email-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+
+        .send-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+            .send-btn:hover {
+                background-color: #45a049;
+            }
+
+        .message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .error {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef5350;
+        }
+
+        .success {
+            background-color: #e8f5e8;
+            color: #2e7d32;
+            border: 1px solid #4caf50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title">Email Validation System</div>
+        <div style="text-align: center; margin-bottom: 20px; color: #666;">
+            Total Credentials: @Model.TotalCredentials
+        </div>
+
+        <form method="post">
+            <div class="caption">Enter your email:</div>
+
+            <input asp-for="Email"
+                   class="email-input"
+                   placeholder="example@domain.com"
+                   type="email" />
+
+            <button type="submit" class="send-btn">Send</button>
+
+            <button type="submit" name="TestEmail" value="true" class="send-btn" style="background-color: #ff9800; margin-left: 10px;">
+                🧪 Test Simple Email
+            </button>
+
+            @if (!string.IsNullOrEmpty(Model.Message))
+            {
+                <div class="message @(Model.IsSuccess ? "success" : "error")">
+                    @Model.Message
+                </div>
+            }
+
+            @Html.AntiForgeryToken()
+        </form>
+    </div>
+</body>
+</html>
