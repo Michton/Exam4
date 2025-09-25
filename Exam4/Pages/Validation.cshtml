@@ -1,0 +1,125 @@
+﻿@page
+@model Exam4.Pages.ValidationModel
+@{
+    ViewData["Title"] = "Email Validation";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@ViewData["Title"] - Exam4</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 600px;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .success {
+            color: #2e7d32;
+        }
+
+        .error {
+            color: #c62828;
+        }
+
+        .icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .success .icon {
+            color: #4CAF50;
+        }
+
+        .error .icon {
+            color: #f44336;
+        }
+
+        .message {
+            font-size: 18px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .details {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .back-link {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .back-link:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        @if (Model.IsSuccess)
+        {
+            <div class="success">
+                <div class="icon">✅</div>
+                <h1>Email Validated Successfully!</h1>
+                <div class="message">
+                    Congratulations! Your email address has been successfully validated.
+                </div>
+
+                @if (Model.Credentials != null)
+                {
+                    <div class="details">
+                        <strong>Email:</strong> @Model.Credentials.Email<br>
+                        <strong>Validated at:</strong> @Model.Credentials.ValidationDate?.ToString("yyyy-MM-dd HH:mm:ss")<br>
+                        <strong>Status:</strong> @Model.Credentials.EmailStatus
+                    </div>
+                }
+
+                <div class="message">
+                    You can now access all features of our system!
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="error">
+                <div class="icon">❌</div>
+                <h1>Validation Failed</h1>
+                <div class="message">
+                    @Model.ErrorMessage
+                </div>
+
+                <div class="message">
+                    Please try requesting a new validation email or contact support if the problem persists.
+                </div>
+            </div>
+        }
+
+        <a href="/MailPage" class="back-link">← Back to Email Validation</a>
+    </div>
+</body>
+</html>
