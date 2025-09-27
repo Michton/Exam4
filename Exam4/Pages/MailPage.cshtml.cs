@@ -1,11 +1,11 @@
-﻿
-using Exam4.Models;
+﻿using Exam4.Models;
 using Exam4.Services;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Exam4.Pages
@@ -14,6 +14,7 @@ namespace Exam4.Pages
     {
         private readonly ICredentialsService _credentialsService;
         private readonly IEmailService _emailService;
+        private readonly ITestEmailService _testEmailService;
 
         [BindProperty]
         [Required(ErrorMessage = "Please enter an email address.")]
@@ -22,12 +23,14 @@ namespace Exam4.Pages
         public string Message { get; set; } = string.Empty;
         public bool IsSuccess { get; set; } = false;
         public int TotalCredentials { get; set; } = 0;
+        public int UniqueEmails { get; set; } = 0;
 
         // Constructor - injects the services we need
-        public MailPageModel(ICredentialsService credentialsService, IEmailService emailService)
+        public MailPageModel(ICredentialsService credentialsService, IEmailService emailService, ITestEmailService testEmailService)
         {
             _credentialsService = credentialsService;
             _emailService = emailService;
+            _testEmailService = testEmailService;
         }
 
         // This runs when the page loads (GET request)
@@ -36,15 +39,61 @@ namespace Exam4.Pages
             Message = "";
             IsSuccess = false;
             TotalCredentials = _credentialsService.GetTotalCount();
+            UniqueEmails = _credentialsService.GetUniqueEmailCount();
         }
 
-        // THIS METHOD RUNS WHEN THE "SEND" BUTTON IS CLICKED (POST request)
+        // THIS METHOD RUNS WHEN ANY BUTTON IS CLICKED (POST request)
         public async Task<IActionResult> OnPostAsync()
+        {
+            // Check if this is a test email request
+            if (Request.Form.ContainsKey("TestEmail"))
+            {
+                return await HandleTestEmail();
+            }
+
+            // Otherwise, handle normal email validation flow
+            return await HandleEmailValidation();
+        }
+
+        private async Task<IActionResult> HandleTestEmail()
+        {
+            Console.WriteLine("🧪 TEST EMAIL BUTTON CLICKED!");
+
+            TotalCredentials = _credentialsService.GetTotalCount();
+            UniqueEmails = _credentialsService.GetUniqueEmailCount();
+
+            if (string.IsNullOrEmpty(Email))
+            {
+                Message = "Please enter an email address for testing.";
+                IsSuccess = false;
+                return Page();
+            }
+
+            Console.WriteLine($"🧪 Sending test email to: {Email}");
+
+            bool testEmailSent = await _testEmailService.SendSimpleTestEmailAsync(Email.Trim());
+
+            if (testEmailSent)
+            {
+                Message = $"🧪 SUCCESS! Simple test email sent to {Email}. Check your inbox!";
+                IsSuccess = true;
+            }
+            else
+            {
+                Message = $"🧪 FAILED! Could not send test email to {Email}. Check console for errors.";
+                IsSuccess = false;
+            }
+
+            return Page();
+        }
+
+        private async Task<IActionResult> HandleEmailValidation()
         {
             Console.WriteLine("🔘 SEND BUTTON WAS CLICKED! Starting email process...");
 
-            // Get current count
+            // Get current counts
             TotalCredentials = _credentialsService.GetTotalCount();
+            UniqueEmails = _credentialsService.GetUniqueEmailCount();
 
             // Step 1: Check if email field is empty
             if (string.IsNullOrEmpty(Email))
@@ -68,16 +117,7 @@ namespace Exam4.Pages
 
             Console.WriteLine("✅ Email format is valid");
 
-            // Step 3: Check if this email already exists in our system
-            var existingCredentials = _credentialsService.GetCredentialsByEmail(Email.Trim());
-            if (existingCredentials != null)
-            {
-                Console.WriteLine("⚠️ Email already exists in system");
-                Message = $"Email already registered! Token: {existingCredentials.Token}";
-                IsSuccess = false;
-                return Page();
-            }
-
+          
             // Step 4: Create new credentials object
             Console.WriteLine("🆕 Creating new credentials...");
             var newCredentials = new Credentials(Email.Trim());

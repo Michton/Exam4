@@ -1,51 +1,61 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Exam4.Models
+namespace Exam4.Models;
+
+public class Credentials
 {
-    public class Credentials
+    [Required]
+    [EmailAddress]
+    public string Email { get; set; } = string.Empty;
+
+    public DateTime CreationDate { get; set; } = DateTime.Now;
+
+    public string Token { get; set; } = string.Empty;
+
+    public DateTime? ValidationDate { get; set; } = null;
+
+    // NEW: Track login attempts
+    public DateTime? LoginDate { get; set; } = null;
+    public bool LoginSuccess { get; set; } = false;
+
+    public EmailStatus EmailStatus { get; set; } = EmailStatus.Created;
+
+    // Constructor
+    public Credentials()
     {
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; } = string.Empty;
+        // Generate a unique token when creating credentials
+        Token = Guid.NewGuid().ToString();
+    }
 
-        public DateTime CreationDate { get; set; } = DateTime.Now;
+    // Constructor with email
+    public Credentials(string email) : this()
+    {
+        Email = email;
+    }
 
-        public string Token { get; set; } = string.Empty;
+    // Method to mark as validated
+    public void MarkAsValidated()
+    {
+        EmailStatus = EmailStatus.Validated;
+        ValidationDate = DateTime.Now;
+    }
 
-        public DateTime? ValidationDate { get; set; } = null;
+    // Method to mark as sent successfully
+    public void MarkAsSentSuccessfully()
+    {
+        EmailStatus = EmailStatus.SendSuccessfully;
+    }
 
-        public EmailStatus EmailStatus { get; set; } = EmailStatus.Created;
+    // Method to mark as sent with error
+    public void MarkAsSentWithError()
+    {
+        EmailStatus = EmailStatus.SendWithError;
+    }
 
-        // Constructor
-        public Credentials()
-        {
-            // Generate a unique token when creating credentials
-            Token = Guid.NewGuid().ToString();
-        }
-
-        // Constructor with email
-        public Credentials(string email) : this()
-        {
-            Email = email;
-        }
-
-        // Method to mark as validated
-        public void MarkAsValidated()
-        {
-            EmailStatus = EmailStatus.Validated;
-            ValidationDate = DateTime.Now;
-        }
-
-        // Method to mark as sent successfully
-        public void MarkAsSentSuccessfully()
-        {
-            EmailStatus = EmailStatus.SendSuccessfully;
-        }
-
-        // Method to mark as sent with error
-        public void MarkAsSentWithError()
-        {
-            EmailStatus = EmailStatus.SendWithError;
-        }
+    // NEW: Method to record login attempt
+    public void RecordLoginAttempt(bool success)
+    {
+        LoginDate = DateTime.Now;
+        LoginSuccess = success;
     }
 }
