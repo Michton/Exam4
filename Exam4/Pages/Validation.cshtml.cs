@@ -53,11 +53,12 @@ public class ValidationModel : PageModel
         if (credentials.EmailStatus == EmailStatus.Validated)
         {
             Console.WriteLine("⚠️ Email already validated");
-            IsSuccess = true;
+            IsSuccess = false;
+            ErrorMessage = "This token has already be used for login. As for a new one to re-login.";
             Credentials = credentials;
-            // Still record this as a successful login attempt
-            credentials.RecordLoginAttempt(true);
-            _credentialsService.UpdateCredentials(credentials);
+            //// Still record this as a successful login attempt
+            //credentials.RecordLoginAttempt(true);
+            //_credentialsService.UpdateCredentials(credentials);
             return Page();
         }
 

@@ -117,7 +117,7 @@ namespace Exam4.Pages
 
             Console.WriteLine("✅ Email format is valid");
 
-          
+           
             // Step 4: Create new credentials object
             Console.WriteLine("🆕 Creating new credentials...");
             var newCredentials = new Credentials(Email.Trim());
