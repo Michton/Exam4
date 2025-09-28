@@ -3,7 +3,6 @@
 @{
     ViewData["Title"] = "Email Validation";
 }
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -82,6 +81,31 @@
             color: #2e7d32;
             border: 1px solid #4caf50;
         }
+
+        /* NEW: Admin link styles */
+        .admin-section {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .admin-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background: linear-gradient(145deg, #666, #555);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+            .admin-link:hover {
+                background: linear-gradient(145deg, #555, #444);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            }
     </style>
 </head>
 <body>
@@ -90,30 +114,32 @@
         <div style="text-align: center; margin-bottom: 20px; color: #666;">
             Total Attempts: @Model.TotalCredentials | Unique Emails: @Model.UniqueEmails
         </div>
-
         <form method="post">
             <div class="caption">Enter your email:</div>
-
             <input asp-for="Email"
                    class="email-input"
                    placeholder="example@domain.com"
                    type="email" />
-
             <button type="submit" class="send-btn">Send</button>
-
             <button type="submit" name="TestEmail" value="true" class="send-btn" style="background-color: #ff9800; margin-left: 10px;">
                 🧪 Test Simple Email
             </button>
-
             @if (!string.IsNullOrEmpty(Model.Message))
             {
                 <div class="message @(Model.IsSuccess ? "success" : "error")">
                     @Model.Message
                 </div>
             }
-
             @Html.AntiForgeryToken()
         </form>
+
+        <!-- NEW: Admin Panel Access -->
+        <div class="admin-section">
+            <p style="color: #888; font-size: 13px; margin-bottom: 10px;">System Administration</p>
+            <a href="/Admin" class="admin-link">
+                🔐 Admin Panel
+            </a>
+        </div>
     </div>
 </body>
 </html>
